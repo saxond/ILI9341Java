@@ -1,5 +1,7 @@
 package org.daubin.adafriuit;
 
+import java.awt.image.BufferedImage;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.Pin;
@@ -13,10 +15,7 @@ public class ILI9341Builder {
     
     private GpioController gpioController = GpioFactory.getInstance();
     
-    private int width = ILI9341.ILI9341_TFTWIDTH;
-    private int height = ILI9341.ILI9341_TFTHEIGHT;
-    
-    private int rotation = 0;
+    private BufferedImage image;
     
     private ILI9341Builder() {}
     
@@ -24,7 +23,10 @@ public class ILI9341Builder {
      * Creates a new {@link ILI9341} instance.
      */
     public ILI9341 build(SpiDevice spiDevice) {
-        return new ILI9341(dc, rst, spiDevice, gpioController, width, height, rotation);
+        if (null == image) {
+            image = new BufferedImage(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
+        }
+        return new ILI9341(dc, rst, spiDevice, gpioController, image);
     }
 
     public static ILI9341Builder newBuilder() {
@@ -41,23 +43,8 @@ public class ILI9341Builder {
         return this;
     }
 
-    public ILI9341Builder setRotation(int rotation) {
-        this.rotation = rotation;
-        return this;
-    }
-
     public ILI9341Builder setGpioController(GpioController gpioController) {
         this.gpioController = gpioController;
-        return this;
-    }
-
-    public ILI9341Builder setWidth(int width) {
-        this.width = width;
-        return this;
-    }
-
-    public ILI9341Builder setHeight(int height) {
-        this.height = height;
         return this;
     }
    

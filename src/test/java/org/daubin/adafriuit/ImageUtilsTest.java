@@ -26,8 +26,9 @@ public class ImageUtilsTest {
         
         byte[] to565rgbBytes = ImageUtils.to565RGBBytes(bufferedImage);
         
-        Assert.assertEquals(-8, to565rgbBytes[0]);
-        Assert.assertEquals(0, to565rgbBytes[1]);
+        Assert.assertEquals(-124, to565rgbBytes[0]);
+        Assert.assertEquals(16, to565rgbBytes[1]);
+        Assert.assertEquals(-124, to565rgbBytes[2]);
     }
     
     @Test

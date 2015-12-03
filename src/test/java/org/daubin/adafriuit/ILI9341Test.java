@@ -1,5 +1,6 @@
 package org.daubin.adafriuit;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,11 +29,12 @@ public class ILI9341Test {
         }
         
         MockSpiDevice spiDevice = new MockSpiDevice();
-        ILI9341 ili9341 = new ILI9341(Mockito.mock(Pin.class), Mockito.mock(Pin.class), spiDevice, createGpio(), 240, 120, 0);
+        ILI9341 ili9341 = new ILI9341(Mockito.mock(Pin.class), Mockito.mock(Pin.class), spiDevice, createGpio(),
+                Mockito.mock(BufferedImage.class));
         
         ili9341.sendBytes(State.Data, bytes);
         
-        byte[] bytesAfter = spiDevice.bytes.array();
+        byte[] bytesAfter = spiDevice.getBytes();
         Assert.assertEquals(bytes.length, bytesAfter.length);
         
         for (int i = 0; i < bytes.length; i++) {
@@ -44,11 +46,11 @@ public class ILI9341Test {
     public void sendMultiInt() throws IOException {
         
         MockSpiDevice spiDevice = new MockSpiDevice();
-        ILI9341 ili9341 = new ILI9341(Mockito.mock(Pin.class), Mockito.mock(Pin.class), spiDevice, createGpio(), 240, 120, 0);
+        ILI9341 ili9341 = new ILI9341(Mockito.mock(Pin.class), Mockito.mock(Pin.class), spiDevice, createGpio(), Mockito.mock(BufferedImage.class));
         
         ili9341.sendShort(State.Data, 0x265535);
         
-        byte[] bytesAfter = spiDevice.bytes.array();
+        byte[] bytesAfter = spiDevice.getBytes();
         Assert.assertEquals(2, bytesAfter.length);
                 
         Assert.assertEquals(0x55, bytesAfter[0]);
@@ -72,6 +74,12 @@ public class ILI9341Test {
         public String write(String data, Charset charset) throws IOException {
             // TODO Auto-generated method stub
             return null;
+        }
+
+        public byte[] getBytes() {
+            byte[] bytes = new byte[this.bytes.position()];
+            System.arraycopy(this.bytes.array(), 0, bytes, 0, this.bytes.position());
+            return bytes;
         }
 
         @Override

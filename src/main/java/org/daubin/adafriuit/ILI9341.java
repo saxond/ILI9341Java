@@ -89,19 +89,13 @@ public class ILI9341 {
 
     private final GpioPinDigitalOutput dcPin;
     private final GpioPinDigitalOutput resetPin;
-    private final int width;
-    private final int height;
     private final BufferedImage buffer;
     private final SpiDevice spiDevice;
-    private final int rotation;
 
-    ILI9341(Pin dc, Pin resetPin, SpiDevice spiDevice, GpioController gpioController, int width, int height, int rotation) {
-        
-        this.width = width;
-        this.height = height;
-        this.rotation = rotation;
+    ILI9341(Pin dc, Pin resetPin, SpiDevice spiDevice, GpioController gpioController, BufferedImage image) {
         
         this.spiDevice = spiDevice;
+        buffer = image;
         
         this.dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);
         
@@ -113,7 +107,6 @@ public class ILI9341 {
             this.resetPin.setShutdownOptions(true, PinState.LOW);
         }
          
-        this.buffer = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_565_RGB);
     }
 
     public void begin() throws IOException {
@@ -238,10 +231,7 @@ public class ILI9341 {
         
         // Set DC low for command, high for data.
         if (!state.state.equals(dcPin.getState())) {
-            System.out.println("Set pin " + dcPin + " state to " + state.state + " from " + dcPin.getState());
             dcPin.setState(state.state);
-        } else {
-            System.err.println("Already pin state " + dcPin.getState());
         }
         
         if (data.length < SpiDevice.MAX_SUPPORTED_BYTES) {
@@ -304,7 +294,7 @@ public class ILI9341 {
     
     public void clear(Color color) {
         buffer.getGraphics().setColor(color);
-        buffer.getGraphics().fillRect(0, 0, width, height);
+        buffer.getGraphics().fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
     }
 
     /**
@@ -317,10 +307,10 @@ public class ILI9341 {
      */
     private void setWindow(int x0, int y0, int x1, int y1) throws IOException {
         if (x1 < 0) {
-            x1 = width - 1;
+            x1 = buffer.getWidth() - 1;
         }
         if (y1 < 0) {
-            y1 = height - 1;
+            y1 = buffer.getHeight() - 1;
         }
         command(ILI9341_CASET);     // Column addr set
         sendShort(State.Data, x0);
