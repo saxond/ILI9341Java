@@ -1,6 +1,6 @@
-# ILI9341
+# ILI9341Java
 
-This is a WIP java port of [Adafruit_GPIO](https://github.com/adafruit/Adafruit_Python_GPIO/blob/master/Adafruit_GPIO/GPIO.py).
+This is a WIP java port of [Adafruit_Python_ILI9341](https://github.com/adafruit/Adafruit_Python_ILI9341/blob/master/Adafruit_ILI9341/ILI9341.py).
 
 ## Why did I do this?
 
