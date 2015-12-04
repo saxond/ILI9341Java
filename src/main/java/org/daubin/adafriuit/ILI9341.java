@@ -7,14 +7,16 @@ import java.nio.ByteBuffer;
 
 import org.daubin.adafriuit.image.ImageUtils;
 
-import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.spi.SpiDevice;
 
 /**
  * Use the {@link ILI9341Builder} to create an instance of this class.
+ * 
+ * This is a java port of 
+ * https://github.com/adafruit/Adafruit_Python_ILI9341/blob/master/Adafruit_ILI9341/ILI9341.py
+ * 
  * @author sdaubin
  *
  */
@@ -92,21 +94,12 @@ public class ILI9341 {
     private final BufferedImage buffer;
     private final SpiDevice spiDevice;
 
-    ILI9341(Pin dc, Pin resetPin, SpiDevice spiDevice, GpioController gpioController, BufferedImage image) {
+    ILI9341(GpioPinDigitalOutput dc, GpioPinDigitalOutput resetPin, SpiDevice spiDevice, BufferedImage image) {
         
+        this.dcPin = dc;
+        this.resetPin = resetPin;
         this.spiDevice = spiDevice;
         buffer = image;
-        
-        this.dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);
-        
-        this.dcPin.setShutdownOptions(true, PinState.LOW);
-        
-        this.resetPin = resetPin == null ? null : gpioController.provisionDigitalOutputPin(resetPin, "reset", PinState.HIGH);
-        
-        if (this.resetPin != null) {
-            this.resetPin.setShutdownOptions(true, PinState.LOW);
-        }
-         
     }
 
     public void begin() throws IOException {

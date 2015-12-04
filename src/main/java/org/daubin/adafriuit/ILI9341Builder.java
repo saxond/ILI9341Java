@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.spi.SpiDevice;
 
@@ -26,7 +28,11 @@ public class ILI9341Builder {
         if (null == image) {
             image = new BufferedImage(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
         }
-        return new ILI9341(dc, rst, spiDevice, gpioController, image);
+        
+        GpioPinDigitalOutput dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);        
+        GpioPinDigitalOutput resetPin = rst == null ? null : gpioController.provisionDigitalOutputPin(rst, "reset", PinState.HIGH);
+        
+        return new ILI9341(dcPin, resetPin, spiDevice, image);
     }
 
     public static ILI9341Builder newBuilder() {
