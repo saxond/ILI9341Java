@@ -37,10 +37,6 @@ public class ImageUtils {
         return buffer.array();
     }
     
-    public static LCDGraphics getLCDGraphics(BufferedImage image, ImageRotation rotation) {
-        return new LCDGraphicsImpl(image, rotation);
-    }
-    
     /**
      * Convert red, green, blue components to a 16-bit 565 RGB value. Components
      * should be values 0 to 255
