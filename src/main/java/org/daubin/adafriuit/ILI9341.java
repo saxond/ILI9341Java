@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.daubin.adafriuit.image.ImageRotation;
 import org.daubin.adafriuit.image.ImageUtils;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -25,84 +26,129 @@ public class ILI9341 {
     public final static int ILI9341_TFTWIDTH    = 240;
     public final static int ILI9341_TFTHEIGHT   = 320;
     
-    public final static byte ILI9341_NOP         = 0x00;
-    public final static byte ILI9341_SWRESET     = 0x01;
-    public final static byte ILI9341_RDDID       = 0x04;
-    public final static byte ILI9341_RDDST       = 0x09;
+    private final static byte ILI9341_NOP         = 0x00;
+    private final static byte ILI9341_SWRESET     = 0x01;
+    private final static byte ILI9341_RDDID       = 0x04;
+    private final static byte ILI9341_RDDST       = 0x09;
 
-    public final static byte ILI9341_SLPIN       = 0x10;
-    public final static byte ILI9341_SLPOUT      = 0x11;
-    public final static byte ILI9341_PTLON       = 0x12;
-    public final static byte ILI9341_NORON       = 0x13;
+    private final static byte ILI9341_SLPIN       = 0x10;
+    private final static byte ILI9341_SLPOUT      = 0x11;
+    private final static byte ILI9341_PTLON       = 0x12;
+    private final static byte ILI9341_NORON       = 0x13;
 
-    public final static byte ILI9341_RDMODE      = 0x0A;
-    public final static byte ILI9341_RDMADCTL    = 0x0B;
-    public final static byte ILI9341_RDPIXFMT    = 0x0C;
-    public final static byte ILI9341_RDIMGFMT    = 0x0A;
-    public final static byte ILI9341_RDSELFDIAG  = 0x0F;
+    private final static byte ILI9341_RDMODE      = 0x0A;
+    private final static byte ILI9341_RDMADCTL    = 0x0B;
+    private final static byte ILI9341_RDPIXFMT    = 0x0C;
+    private final static byte ILI9341_RDIMGFMT    = 0x0A;
+    private final static byte ILI9341_RDSELFDIAG  = 0x0F;
 
-    public final static byte ILI9341_INVOFF      = 0x20;
-    public final static byte ILI9341_INVON       = 0x21;
-    public final static byte ILI9341_GAMMASET    = 0x26;
-    public final static byte ILI9341_DISPOFF     = 0x28;
-    public final static byte ILI9341_DISPON      = 0x29;
+    private final static byte ILI9341_INVOFF      = 0x20;
+    private final static byte ILI9341_INVON       = 0x21;
+    private final static byte ILI9341_GAMMASET    = 0x26;
+    private final static byte ILI9341_DISPOFF     = 0x28;
+    private final static byte ILI9341_DISPON      = 0x29;
 
-    public final static byte ILI9341_CASET       = 0x2A;
-    public final static byte ILI9341_PASET       = 0x2B;
-    public final static byte ILI9341_RAMWR       = 0x2C;
-    public final static byte ILI9341_RAMRD       = 0x2E;
+    private final static byte ILI9341_CASET       = 0x2A;
+    private final static byte ILI9341_PASET       = 0x2B;
+    private final static byte ILI9341_RAMWR       = 0x2C;
+    private final static byte ILI9341_RAMRD       = 0x2E;
 
-    public final static byte ILI9341_PTLAR       = 0x30;
-    public final static byte ILI9341_MADCTL      = 0x36;
-    public final static byte ILI9341_PIXFMT      = 0x3A;
+    private final static byte ILI9341_PTLAR       = 0x30;
+    private final static byte ILI9341_MADCTL      = 0x36;
+    private final static byte ILI9341_PIXFMT      = 0x3A;
 
-    public final static int ILI9341_FRMCTR1     = 0xB1;
-    public final static int ILI9341_FRMCTR2     = 0xB2;
-    public final static int ILI9341_FRMCTR3     = 0xB3;
-    public final static int ILI9341_INVCTR      = 0xB4;
-    public final static int ILI9341_DFUNCTR     = 0xB6;
+    private final static int ILI9341_FRMCTR1     = 0xB1;
+    private final static int ILI9341_FRMCTR2     = 0xB2;
+    private final static int ILI9341_FRMCTR3     = 0xB3;
+    private final static int ILI9341_INVCTR      = 0xB4;
+    private final static int ILI9341_DFUNCTR     = 0xB6;
 
-    public final static int ILI9341_PWCTR1      = 0xC0;
-    public final static int ILI9341_PWCTR2      = 0xC1;
-    public final static int ILI9341_PWCTR3      = 0xC2;
-    public final static int ILI9341_PWCTR4      = 0xC3;
-    public final static int ILI9341_PWCTR5      = 0xC4;
-    public final static int ILI9341_VMCTR1      = 0xC5;
-    public final static int ILI9341_VMCTR2      = 0xC7;
+    private final static int ILI9341_PWCTR1      = 0xC0;
+    private final static int ILI9341_PWCTR2      = 0xC1;
+    private final static int ILI9341_PWCTR3      = 0xC2;
+    private final static int ILI9341_PWCTR4      = 0xC3;
+    private final static int ILI9341_PWCTR5      = 0xC4;
+    private final static int ILI9341_VMCTR1      = 0xC5;
+    private final static int ILI9341_VMCTR2      = 0xC7;
 
-    public final static int ILI9341_RDID1       = 0xDA;
-    public final static int ILI9341_RDID2       = 0xDB;
-    public final static int ILI9341_RDID3       = 0xDC;
-    public final static int ILI9341_RDID4       = 0xDD;
+    private final static int ILI9341_RDID1       = 0xDA;
+    private final static int ILI9341_RDID2       = 0xDB;
+    private final static int ILI9341_RDID3       = 0xDC;
+    private final static int ILI9341_RDID4       = 0xDD;
 
-    public final static int ILI9341_GMCTRP1     = 0xE0;
-    public final static int ILI9341_GMCTRN1     = 0xE1;
+    private final static int ILI9341_GMCTRP1     = 0xE0;
+    private final static int ILI9341_GMCTRN1     = 0xE1;
 
-    public final static int ILI9341_PWCTR6      = 0xFC;
+    private final static int ILI9341_PWCTR6      = 0xFC;
 
-    public final static int ILI9341_BLACK       = 0x0000;
-    public final static int ILI9341_BLUE        = 0x001F;
-    public final static int ILI9341_RED         = 0xF800;
-    public final static int ILI9341_GREEN       = 0x07E0;
-    public final static int ILI9341_CYAN        = 0x07FF;
-    public final static int ILI9341_MAGENTA     = 0xF81F;
-    public final static int ILI9341_YELLOW      = 0xFFE0; 
-    public final static int ILI9341_WHITE       = 0xFFFF;
+    private final static int ILI9341_BLACK       = 0x0000;
+    private final static int ILI9341_BLUE        = 0x001F;
+    private final static int ILI9341_RED         = 0xF800;
+    private final static int ILI9341_GREEN       = 0x07E0;
+    private final static int ILI9341_CYAN        = 0x07FF;
+    private final static int ILI9341_MAGENTA     = 0xF81F;
+    private final static int ILI9341_YELLOW      = 0xFFE0; 
+    private final static int ILI9341_WHITE       = 0xFFFF;
+    
+    private final static int MADCTL_MY   = 0x80;
+    private final static int MADCTL_MX   = 0x40;
+    private final static int MADCTL_MV   = 0x20;
+    private final static int MADCTL_ML   = 0x10;
+    private final static int MADCTL_RGB  = 0x00;
+    private final static int MADCTL_BGR  = 0x08;
+    private final static int MADCTL_MH   = 0x04;
 
     private final GpioPinDigitalOutput dcPin;
     private final GpioPinDigitalOutput resetPin;
     private final BufferedImage buffer;
     private final SpiDevice spiDevice;
+    private final int width;
+    private final int height;
 
-    ILI9341(GpioPinDigitalOutput dc, GpioPinDigitalOutput resetPin, SpiDevice spiDevice, BufferedImage image) {
+    ILI9341(GpioPinDigitalOutput dc, GpioPinDigitalOutput resetPin, SpiDevice spiDevice, BufferedImage image, ImageRotation imageRotation) throws IOException {
         
         this.dcPin = dc;
         this.resetPin = resetPin;
         this.spiDevice = spiDevice;
         buffer = image;
+        
+        switch (imageRotation) {
+        case RIGHT_90:
+        case LEFT_90:
+            this.height = ILI9341_TFTWIDTH;
+            this.width = ILI9341_TFTHEIGHT;
+            break;
+        default:
+            this.width = ILI9341_TFTWIDTH;
+            this.height = ILI9341_TFTHEIGHT;
+        }
+        
+        begin();
+        
+        setRotation(imageRotation);
     }
 
-    public void begin() throws IOException {
+    private void setRotation(ImageRotation imageRotation) throws IOException {
+        
+        final int flags = MADCTL_BGR;
+        command(ILI9341_MADCTL);
+        switch (imageRotation) {
+        case NONE:
+            data(MADCTL_MX | flags);
+            return;
+        case RIGHT_90:
+            data(MADCTL_MV | flags);
+            return;
+        case RIGHT_180:
+            data(MADCTL_MY | flags);
+            return;
+        case LEFT_90:
+            data(MADCTL_MX | MADCTL_MY | MADCTL_MV | flags);
+            return;
+        }
+    }
+
+    private void begin() throws IOException {
         reset();
         
         command(0xEF);
@@ -189,9 +235,10 @@ public class ILI9341 {
         data(0x31);
         data(0x36);
         data(0x0F);
+        
         command(ILI9341_SLPOUT);    // Exit Sleep
-        sleep(0.120f);
-        command(ILI9341_DISPON);    // Display on 
+        sleep(120);
+        command(ILI9341_DISPON);    // Display on
     }
 
     private void data(int data) throws IOException {
@@ -207,8 +254,8 @@ public class ILI9341 {
         sendByte(State.Command, data);
     }
     
-    void sendByte(State state, int data) throws IOException {
-        sendBytes(state, new byte[] { (byte) data});
+    void sendByte(State state, int data) throws IOException {        
+        sendBytes(state, (byte)data);
     }
     
     void sendShort(State state, int data) throws IOException {
@@ -220,7 +267,7 @@ public class ILI9341 {
     /**
      * Write a byte or array of bytes to the display. 
      */
-    void sendBytes(State state, byte[] data) throws IOException {
+    void sendBytes(State state, byte... data) throws IOException {
         
         // Set DC low for command, high for data.
         if (!state.state.equals(dcPin.getState())) {
@@ -230,7 +277,6 @@ public class ILI9341 {
         if (data.length < SpiDevice.MAX_SUPPORTED_BYTES) {
             spiDevice.write(data);
         } else {
-        
             int length;
             // Write data a chunk at a time.
             for (int start = 0; start < data.length; start+= SpiDevice.MAX_SUPPORTED_BYTES) {
@@ -242,21 +288,19 @@ public class ILI9341 {
     }
 
     public void reset() {
-
         if (resetPin != null) {
             resetPin.setState(PinState.HIGH);
-            sleep(0.005f);
+            sleep(5);
             resetPin.setState(PinState.LOW);
-            sleep(0.02f);
+            sleep(20);
             resetPin.setState(PinState.HIGH);
-            sleep(0.150f);
+            sleep(150);
         }
     }
 
-    private void sleep(float seconds) {
-        long timeInMillis = (long) (seconds * 1000);
+    private void sleep(int milliseconds) {
         try {
-            Thread.sleep(timeInMillis);
+            Thread.sleep(milliseconds);
         } catch (InterruptedException e) {
         }
     }
@@ -300,10 +344,10 @@ public class ILI9341 {
      */
     private void setWindow(int x0, int y0, int x1, int y1) throws IOException {
         if (x1 < 0) {
-            x1 = buffer.getWidth() - 1;
+            x1 = width - 1;
         }
         if (y1 < 0) {
-            y1 = buffer.getHeight() - 1;
+            y1 = height - 1;
         }
         command(ILI9341_CASET);     // Column addr set
         sendShort(State.Data, x0);

@@ -1,6 +1,9 @@
 package org.daubin.adafriuit;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import org.daubin.adafriuit.image.ImageRotation;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -14,6 +17,7 @@ public class ILI9341Builder {
            
     private Pin dc = RaspiPin.GPIO_18;
     private Pin rst;
+    private ImageRotation imageRotation = ImageRotation.NONE;
     
     private GpioController gpioController = GpioFactory.getInstance();
     
@@ -23,16 +27,17 @@ public class ILI9341Builder {
     
     /**
      * Creates a new {@link ILI9341} instance.
+     * @throws IOException 
      */
-    public ILI9341 build(SpiDevice spiDevice) {
+    public ILI9341 build(SpiDevice spiDevice) throws IOException {
         if (null == image) {
             image = new BufferedImage(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
         }
         
-        GpioPinDigitalOutput dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);        
+        GpioPinDigitalOutput dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);
         GpioPinDigitalOutput resetPin = rst == null ? null : gpioController.provisionDigitalOutputPin(rst, "reset", PinState.HIGH);
         
-        return new ILI9341(dcPin, resetPin, spiDevice, image);
+        return new ILI9341(dcPin, resetPin, spiDevice, image, imageRotation);
     }
 
     public static ILI9341Builder newBuilder() {
@@ -46,6 +51,11 @@ public class ILI9341Builder {
 
     public ILI9341Builder setResetPin(Pin rst) {
         this.rst = rst;
+        return this;
+    }
+
+    public ILI9341Builder setImageRotation(ImageRotation imageRotation) {
+        this.imageRotation = imageRotation;
         return this;
     }
 

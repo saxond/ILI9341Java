@@ -6,18 +6,15 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ImageUtils {
+    private ImageUtils() { }
     
-    public static byte[] to565RGBBytes(BufferedImage image) throws IOException {
-        return to565RGBBytes(image, 0);
-    }
-
     /**
      * Generator function to convert an image to 16-bit 565 RGB bytes.
      * @return
      * @throws IOException 
      */
-    public static byte[] to565RGBBytes(BufferedImage image, int rotation) throws IOException {
-        
+    public static byte[] to565RGBBytes(BufferedImage image) throws IOException {
+
         int width = image.getWidth();
         int height = image.getHeight();
         
@@ -40,39 +37,10 @@ public class ImageUtils {
         return buffer.array();
     }
     
-
-    /**
-     * Calculates the x-coordinate of the screen upon rotation.
-     */
-    public static int getScreenXFromImageCoords(int rotation, int x, int y, int width) {
-        switch (rotation) {
-        case 0:
-            return x;
-        case 1:
-            return width-y;
-        case 2:
-            return width-x;
-        case 3:
-            return y;
-        }
-        return 0;
+    public static LCDGraphics getLCDGraphics(BufferedImage image, ImageRotation rotation) {
+        return new LCDGraphicsImpl(image, rotation);
     }
     
-    public static int getScreenYFromImageCoords(int rotation, int x, int y, int height) {
-        switch (rotation) {
-        case 0:
-            return y;
-        case 1:
-            return x;
-        case 2:
-            return height-y;
-        case 3:
-            return height-x;
-        }
-        return 0;
-    }
-
-
     /**
      * Convert red, green, blue components to a 16-bit 565 RGB value. Components
      * should be values 0 to 255

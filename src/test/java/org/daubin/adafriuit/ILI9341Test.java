@@ -8,14 +8,29 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 import org.daubin.adafriuit.ILI9341.State;
+import org.daubin.adafriuit.image.ImageRotation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.spi.SpiDevice;
+import com.sun.javafx.iio.ImageStorage.ImageType;
 
 public class ILI9341Test {
+    
+
+    @Test
+    public void begin() throws IOException {
+        byte[] bytes = new byte[3000];
+        
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte)i;
+        }
+        
+        MockSpiDevice spiDevice = new MockSpiDevice();
+        ILI9341 ili9341 = new ILI9341(Mockito.mock(GpioPinDigitalOutput.class), Mockito.mock(GpioPinDigitalOutput.class), spiDevice, Mockito.mock(BufferedImage.class), ImageRotation.NONE);        
+    }
     
     @Test
     public void send() throws IOException {
@@ -26,7 +41,7 @@ public class ILI9341Test {
         }
         
         MockSpiDevice spiDevice = new MockSpiDevice();
-        ILI9341 ili9341 = new ILI9341(Mockito.mock(GpioPinDigitalOutput.class), Mockito.mock(GpioPinDigitalOutput.class), spiDevice, Mockito.mock(BufferedImage.class));
+        ILI9341 ili9341 = new ILI9341(Mockito.mock(GpioPinDigitalOutput.class), Mockito.mock(GpioPinDigitalOutput.class), spiDevice, Mockito.mock(BufferedImage.class), ImageRotation.NONE);        
         
         ili9341.sendBytes(State.Data, bytes);
         
@@ -42,7 +57,8 @@ public class ILI9341Test {
     public void sendMultiInt() throws IOException {
         
         MockSpiDevice spiDevice = new MockSpiDevice();
-        ILI9341 ili9341 = new ILI9341(Mockito.mock(GpioPinDigitalOutput.class), Mockito.mock(GpioPinDigitalOutput.class), spiDevice, Mockito.mock(BufferedImage.class));
+        ILI9341 ili9341 = new ILI9341(Mockito.mock(GpioPinDigitalOutput.class), Mockito.mock(GpioPinDigitalOutput.class), spiDevice, Mockito.mock(BufferedImage.class), ImageRotation.NONE);        
+        
         
         ili9341.sendShort(State.Data, 0x265535);
         
