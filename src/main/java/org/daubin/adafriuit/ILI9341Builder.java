@@ -1,5 +1,6 @@
 package org.daubin.adafriuit;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -15,7 +16,7 @@ import com.pi4j.io.spi.SpiDevice;
 
 public class ILI9341Builder {
            
-    private Pin dc = RaspiPin.GPIO_18;
+    private Pin dc = RaspiPin.GPIO_05;
     private Pin rst;
     private ImageRotation imageRotation = ImageRotation.NONE;
     
@@ -31,7 +32,8 @@ public class ILI9341Builder {
      */
     public ILI9341 build(SpiDevice spiDevice) throws IOException {
         if (null == image) {
-            image = new BufferedImage(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT, BufferedImage.TYPE_USHORT_565_RGB);
+            Dimension dimension = imageRotation.getDimension(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT);
+            image = new BufferedImage((int)dimension.getWidth(), (int)dimension.getHeight(), BufferedImage.TYPE_USHORT_565_RGB);
         }
         
         GpioPinDigitalOutput dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);
@@ -44,6 +46,12 @@ public class ILI9341Builder {
         return new ILI9341Builder();
     }
 
+    /**
+     * Set the DC pin.  Remember that p4j uses the wiring pin numbers, not the BCI or 
+     * physical pins.
+     * @param dc
+     * @return
+     */
     public ILI9341Builder setDcPin(Pin dc) {
         this.dc = dc;
         return this;

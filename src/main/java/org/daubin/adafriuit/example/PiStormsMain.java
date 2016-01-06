@@ -24,29 +24,27 @@ public class PiStormsMain {
         SpiDevice spiDevice = SpiFactory.getInstance(
                 SpiChannel.CS0, 64000000, SpiMode.MODE_0);
 
+        // http://pinout.xyz/pinout/pin18_gpio24
         ILI9341 disp = ILI9341Builder.newBuilder().
+                // wiring pin 5, BCM pin 24, physical pin 18
                 setDcPin(RaspiPin.GPIO_05).
                 setResetPin(RaspiPin.GPIO_06).
-                setImageRotation(ImageRotation.NONE).
+                setImageRotation(ImageRotation.LEFT_90).
                 build(spiDevice);
 
         System.err.println("After begin");
         
         disp.clear(Color.BLACK);
-        //disp.display();
         
-        BufferedImage bufferedImage = new BufferedImage(
-                ILI9341.ILI9341_TFTWIDTH,
-                ILI9341.ILI9341_TFTHEIGHT,
-                BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bufferedImage = disp.getBufferedImage();
         Graphics graphics = bufferedImage.getGraphics();
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT);
+        graphics.fillRect(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
         
         graphics.setColor(Color.WHITE);
         graphics.setFont(new Font("Arial Black", Font.BOLD, 20));
         graphics.drawString(args[0], 20, 40);
         
-        disp.display(bufferedImage);
+        disp.display();
     }
 }

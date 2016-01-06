@@ -1,6 +1,7 @@
 package org.daubin.adafriuit;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -17,6 +18,9 @@ import com.pi4j.io.spi.SpiDevice;
  * 
  * This is a java port of 
  * https://github.com/adafruit/Adafruit_Python_ILI9341/blob/master/Adafruit_ILI9341/ILI9341.py
+ * 
+ * I also referenced this:
+ * https://github.com/adafruit/Adafruit_ILI9341/blob/master/Adafruit_ILI9341.cpp
  * 
  * @author sdaubin
  *
@@ -102,8 +106,7 @@ public class ILI9341 {
     private final GpioPinDigitalOutput resetPin;
     private final BufferedImage buffer;
     private final SpiDevice spiDevice;
-    private final int width;
-    private final int height;
+    private final Dimension dimension;
 
     ILI9341(GpioPinDigitalOutput dc, GpioPinDigitalOutput resetPin, SpiDevice spiDevice, BufferedImage image, ImageRotation imageRotation) throws IOException {
         
@@ -112,16 +115,7 @@ public class ILI9341 {
         this.spiDevice = spiDevice;
         buffer = image;
         
-        switch (imageRotation) {
-        case RIGHT_90:
-        case LEFT_90:
-            this.height = ILI9341_TFTWIDTH;
-            this.width = ILI9341_TFTHEIGHT;
-            break;
-        default:
-            this.width = ILI9341_TFTWIDTH;
-            this.height = ILI9341_TFTHEIGHT;
-        }
+        this.dimension = imageRotation.getDimension(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT);
         
         begin();
         
@@ -297,6 +291,10 @@ public class ILI9341 {
             sleep(150);
         }
     }
+    
+    public void invertDisplay(boolean inverted) throws IOException {
+        command(inverted ? ILI9341_INVON : ILI9341_INVOFF);
+    }
 
     private void sleep(int milliseconds) {
         try {
@@ -312,7 +310,7 @@ public class ILI9341 {
      * same dimensions as the display hardware.
      * @param image
      */
-    public void display(BufferedImage image) throws IOException {
+    private void display(BufferedImage image) throws IOException {
         // Set address bounds to entire display.
         setWindow(0, 0, -1, -1);
         
@@ -327,6 +325,10 @@ public class ILI9341 {
      */
     public void display() throws IOException {
         display(buffer);
+    }
+    
+    public BufferedImage getBufferedImage() {
+        return buffer;
     }
     
     public void clear(Color color) {
@@ -344,10 +346,10 @@ public class ILI9341 {
      */
     private void setWindow(int x0, int y0, int x1, int y1) throws IOException {
         if (x1 < 0) {
-            x1 = width - 1;
+            x1 = (int)dimension.getWidth() - 1;
         }
         if (y1 < 0) {
-            y1 = height - 1;
+            y1 = (int)dimension.getHeight() - 1;
         }
         command(ILI9341_CASET);     // Column addr set
         sendShort(State.Data, x0);
