@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.spi.SpiDevice;
-import com.sun.javafx.iio.ImageStorage.ImageType;
 
 public class ILI9341Test {
     
