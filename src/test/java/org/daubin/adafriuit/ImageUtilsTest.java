@@ -12,8 +12,10 @@ import java.awt.image.DataBuffer;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.daubin.adafriuit.image.ImageUtils;
 import org.junit.Assert;
@@ -48,27 +50,22 @@ public class ImageUtilsTest {
                 ILI9341.ILI9341_TFTHEIGHT,
                 BufferedImage.TYPE_USHORT_565_RGB);
         
-//        Graphics graphics = bufferedImage.getGraphics();
-//        graphics.setColor(Color.GRAY);
-//        graphics.fillRect(0, 0, ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT);
-//        graphics.setColor(Color.BLACK);
-//        graphics.setFont(new Font("Arial Black", Font.BOLD, 20));
-//        graphics.drawString(text, 10, 25);
-        
-//        LCDGraphics graphics = ImageUtils.getLCDGraphics(bufferedImage, ImageRotation.RIGHT_270);
         Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
-        AffineTransform orig = graphics.getTransform();
-        //graphics.rotate(-Math.PI/2);
-        orig.rotate(Math.toRadians(-90), 0, 0);
+        JPanel panel = new JPanel();
+        panel.setLayout(null); //new FlowLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setSize(ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT);
         
-        graphics.setColor(Color.GRAY);
-        graphics.fillRect(0, 0, ILI9341.ILI9341_TFTWIDTH, ILI9341.ILI9341_TFTHEIGHT);
-        graphics.setColor(Color.BLACK);
-        graphics.setFont(new Font("Arial Black", Font.BOLD, 20).deriveFont(orig));
-        graphics.drawString(text, 10, 25);
+        JButton button = new JButton("test");
+        panel.add(button);
+        button.setBounds(100, 100, 40, 40);
         
-        //graphics.setTransform(orig);
-
+        JLabel label = new JLabel("Test");
+        panel.add(label);
+        
+        panel.setVisible(true);
+        
+        panel.print(graphics);
         
         return bufferedImage;
     }

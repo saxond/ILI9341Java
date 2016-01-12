@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.daubin.adafriuit.image.ImageRotation;
 
+import com.google.common.eventbus.EventBus;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -23,6 +24,7 @@ public class ILI9341Builder {
     private GpioController gpioController = GpioFactory.getInstance();
     
     private BufferedImage image;
+    private EventBus eventBus;
     
     private ILI9341Builder() {}
     
@@ -39,7 +41,11 @@ public class ILI9341Builder {
         GpioPinDigitalOutput dcPin = gpioController.provisionDigitalOutputPin(dc, "dc", PinState.HIGH);
         GpioPinDigitalOutput resetPin = rst == null ? null : gpioController.provisionDigitalOutputPin(rst, "reset", PinState.HIGH);
         
-        return new ILI9341(dcPin, resetPin, spiDevice, image, imageRotation);
+        ILI9341 display = new ILI9341(dcPin, resetPin, spiDevice, image, imageRotation);
+        if (null != eventBus) {
+            eventBus.register(display);
+        }
+        return display;
     }
 
     public static ILI9341Builder newBuilder() {
@@ -59,6 +65,11 @@ public class ILI9341Builder {
 
     public ILI9341Builder setResetPin(Pin rst) {
         this.rst = rst;
+        return this;
+    }
+
+    public ILI9341Builder setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
         return this;
     }
 

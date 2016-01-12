@@ -370,5 +370,9 @@ public class ILI9341 {
             this.state = state;
         }
     }
+
+    public Dimension getDimension() {
+        return new Dimension(buffer.getWidth(), buffer.getHeight());
+    }
     
 }
