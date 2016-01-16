@@ -12,10 +12,17 @@ import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -52,6 +59,9 @@ public class ComponentDisplayAdapter {
             fireRepaint(e.getComponent().getBounds());
         }
     };
+    
+    private final Map<Object, AutoCloseable> componentCleanupTasks = Maps.newConcurrentMap();
+    
     private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
         
         @Override
@@ -96,14 +106,77 @@ public class ComponentDisplayAdapter {
     
     private void removeComponent(Component component) {
         fireRepaint(component.getBounds());
-        component.removeComponentListener(componentListener);
-        component.removePropertyChangeListener(propertyChangeListener);
+        AutoCloseable closeable = componentCleanupTasks.get(component);
+        if (null != closeable) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
-    private void addComponent(Component component) {
+    private void addComponent(final Component component) {
         fireRepaint(component.getBounds());
+        
+        if (component instanceof Container) {
+            for (Component c : ((Container)component).getComponents()) {
+                addComponent(c);
+            }
+        }
+        
+        final List<AutoCloseable> closeables = Lists.newArrayList();
         component.addComponentListener(componentListener);
         component.addPropertyChangeListener(propertyChangeListener);
+        
+        closeables.add(new AutoCloseable() {
+            
+            @Override
+            public void close() throws Exception {
+                component.removeComponentListener(componentListener);
+                component.removePropertyChangeListener(propertyChangeListener);
+            }
+        });
+        
+        final DocumentListener documentListener = new DocumentListener() {
+            
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                fireRepaint(component.getBounds());
+            }
+            
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+//                System.err.println("changedUpdate");
+            }
+        };
+        
+        if (component instanceof JTextComponent) {
+            ((JTextComponent)component).getDocument().addDocumentListener(documentListener);
+            closeables.add(new AutoCloseable() {
+                
+                @Override
+                public void close() throws Exception {
+                    ((JTextComponent)component).getDocument().removeDocumentListener(documentListener);
+                }
+            });
+        }
+        componentCleanupTasks.put(component, new AutoCloseable() {
+            
+            @Override
+            public void close() throws Exception {
+                for (AutoCloseable c : closeables) {
+                    c.close();
+                }
+            }
+        });
     }
 
     @Subscribe
@@ -134,7 +207,7 @@ public class ComponentDisplayAdapter {
             b.getModel().setPressed(pressed);
                                 
             if (pressed) {
-                ActionEvent event = new ActionEvent(this, 666, b.getText());
+                ActionEvent event = new ActionEvent(b, 666, b.getText());
                 for (ActionListener l : b.getActionListeners()) {
                     l.actionPerformed(event);
                 }

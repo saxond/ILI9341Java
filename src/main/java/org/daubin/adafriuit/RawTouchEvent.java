@@ -16,4 +16,9 @@ public class RawTouchEvent {
     public int getY() {
         return y;
     }
+
+    @Override
+    public String toString() {
+        return "RawTouchEvent [x=" + x + ", y=" + y + "]";
+    }
 }

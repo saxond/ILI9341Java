@@ -21,11 +21,11 @@ public class DisplayRepaintManager implements AutoCloseable, Runnable {
     
     private final Logger logger = LoggerFactory.getLogger(DisplayRepaintManager.class);
     
-    private final ILI9341 display;
+    private final Display display;
     private final AtomicBoolean redraw = new AtomicBoolean(false);
     private final ScheduledExecutorService executor;
 
-    public DisplayRepaintManager(ILI9341 display, EventBus eventBus, int refreshInterval, TimeUnit timeUnit) {
+    public DisplayRepaintManager(Display display, EventBus eventBus, int refreshInterval, TimeUnit timeUnit) {
         this.display = display;
         this.executor = Executors.newSingleThreadScheduledExecutor();
         executor.scheduleAtFixedRate(this, refreshInterval, refreshInterval, timeUnit);

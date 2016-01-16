@@ -2,6 +2,7 @@ package org.daubin.adafriuit;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -25,7 +26,7 @@ import com.pi4j.io.spi.SpiDevice;
  * @author sdaubin
  *
  */
-public class ILI9341 {
+public class ILI9341 implements Display {
     
     public final static int ILI9341_TFTWIDTH    = 240;
     public final static int ILI9341_TFTHEIGHT   = 320;
@@ -332,8 +333,9 @@ public class ILI9341 {
     }
     
     public void clear(Color color) {
-        buffer.getGraphics().setColor(color);
-        buffer.getGraphics().fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
+        Graphics2D graphics = buffer.createGraphics();
+        graphics.setColor(color);
+        graphics.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
     }
 
     /**

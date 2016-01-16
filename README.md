@@ -8,8 +8,8 @@ Very reasonable question.  I bought a PiStorms Lego Mindstorms Raspberry Pi shie
 uses a ILI9341 display.  All of the software provided with that thing is written in Python
 and I prefer to write Java so I started porting.
 
-## Current state
+## AWT Programming
 
-It seems like commands (gpio low state on the dc pin) aren't working.  The display initialization
-code isn't functioning.  If you run another program that initializes the display, then run this library,
-it writes something to the display.  
+Using the PiStormsDisplay you can treat the display like a swing JPanel, making it easy to
+add swing components to render attractive UIs.  Screen touches are wired up to mouse events.
+Check out the examples.
